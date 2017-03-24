@@ -1,0 +1,14 @@
+{
+  "name": "gulp-build",
+  "version": "1.0.0",
+  "description": "A simple workflow for creating front end applications",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "gulp"
+  ],
+  "author": "Sebastian Andersson",
+  "license": "MIT"
+}
