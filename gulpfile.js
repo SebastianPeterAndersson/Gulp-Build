@@ -83,3 +83,14 @@ gulp.task('styles', function(callback) {
   runSequence('minifyMapStyles',
               callback);
 });
+
+// =====================================================
+// IMAGES
+//   Tasks:
+//    * compression/minification
+// =====================================================
+gulp.task("images", function() {
+    gulp.src(["images/*.jpg", "images/*.png"])
+        .pipe(imagemin())
+        .pipe(gulp.dest("./dist/content"))
+});
