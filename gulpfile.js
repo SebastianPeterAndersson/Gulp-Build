@@ -14,27 +14,21 @@ eslint = require("gulp-eslint"),
 del = require('del'),
 fs = require("fs");
 
-
-
-
-// –––––––––––––––––––––––––––––––––––––––––––––––––––––
+// =====================================================
 // CLEAN
-// –––––––––––––––––––––––––––––––––––––––––––––––––––––
+// =====================================================
 gulp.task("clean", function(){
-    return gulp.src(["./dist"], {read: false})
+    return gulp.src(["./dist", "./css"], {read: false})
     .pipe(clean());
 });
 
 // =====================================================
 // SCRIPTS
-//  * Concatenation
-//  * Minification
+//   Tasks:
+//    * concatenation
+//    * minification
+//    * source mapping
 // =====================================================
-
-    gulp.task("scripts",["minifyScripts"] , function(){
-        console.log("Minified Scripts");
-    });
-
     gulp.task("concatScripts", function(){
         return gulp.src(["js/**/*.js"])
         .pipe(maps.init())
@@ -51,13 +45,41 @@ gulp.task("clean", function(){
         .pipe(gulp.dest("dist/scripts"));
     });
 
-
-
-
-
-
 gulp.task('scripts', function(callback) {
-  runSequence('clean',
-              'minifyScripts',
+  runSequence('minifyScripts',
+              callback);
+});
+
+
+// =====================================================
+// STYLES
+//   Tasks:
+//    * concatenation
+//    * minification
+//    * source mapping
+// =====================================================
+gulp.task("compileSass", function(){
+    // Since this is a dependency of 'minifyMapStyles', I initally return the value
+    return gulp.src("sass/**/*.scss")
+        // Create source mapping for the css file:
+        .pipe(maps.init())
+        // Compile Sass:
+        .pipe(sass())
+        // Let the source map file share folder with the primary css one:
+        .pipe(maps.write("./"))
+        // Put the compiled sass in the css folder:
+        .pipe(gulp.dest("./css"))
+});
+
+gulp.task("minifyMapStyles", ["compileSass"], function() {
+
+    gulp.src("css/*.css")
+        .pipe(rename("all.min.css"))
+        .pipe(cleanCSS())
+        .pipe(gulp.dest("./dist/styles"));
+});
+
+gulp.task('styles', function(callback) {
+  runSequence('minifyMapStyles',
               callback);
 });
