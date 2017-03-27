@@ -8,19 +8,31 @@ maps = require("gulp-sourcemaps"),
 clean = require("gulp-clean"),
 imagemin = require("gulp-imagemin"),
 connect = require("gulp-connect"),
-livereload = require('gulp-livereload'),
-runSequence = require('run-sequence'),
+livereload = require("gulp-livereload"),
+runSequence = require("run-sequence"),
 eslint = require("gulp-eslint"),
-del = require('del'),
+del = require("del"),
 fs = require("fs");
 
 // =====================================================
 // CLEAN
 // =====================================================
 gulp.task("clean", function(){
-    return gulp.src(["./dist", "./css"], {read: false})
+    return gulp.src(["./dist", "./css", "js/app.js", "js/app.js.map"], {read: false})
     .pipe(clean());
 });
+
+
+// =====================================================
+// WATCH
+// =====================================================
+gulp.task("watch",["serve"] , function(){
+    livereload.listen();
+    gulp.watch("js/**/*.js", ["concatScripts"]);
+    gulp.watch("sass/**/*.scss", ["compileSass"]);
+
+})
+
 
 // =====================================================
 // SCRIPTS
@@ -34,7 +46,8 @@ gulp.task("clean", function(){
         .pipe(maps.init())
         .pipe(concat("app.js"))
         .pipe(maps.write("./"))
-        .pipe(gulp.dest("js"));
+        .pipe(gulp.dest("js"))
+        .pipe(livereload());
     });
 
     //Waits for the concatscripts to run and does the rest of the total script task
@@ -69,10 +82,10 @@ gulp.task("compileSass", function(){
         .pipe(maps.write("./"))
         // Put the compiled sass in the css folder:
         .pipe(gulp.dest("./css"))
+        .pipe(livereload());
 });
 
 gulp.task("minifyMapStyles", ["compileSass"], function() {
-
     gulp.src("css/*.css")
         .pipe(rename("all.min.css"))
         .pipe(cleanCSS())
@@ -83,6 +96,7 @@ gulp.task('styles', function(callback) {
   runSequence('minifyMapStyles',
               callback);
 });
+
 
 // =====================================================
 // IMAGES
@@ -95,13 +109,21 @@ gulp.task("images", function() {
         .pipe(gulp.dest("./dist/content"))
 });
 
-// 1. As a developer, I should be able to run the gulp build command at the command
-//    line to run the clean, scripts, styles, and images tasks with confidence that the clean
-//    task completes before the other commands.
-
 
 // =====================================================
 // BUILD
+//   Tasks:
+//      * running scripts needed to build site
+// =====================================================
+gulp.task("serve", function() {
+    connect.server({
+        port: 3000
+    });
+});
+
+
+// =====================================================
+// SERVE
 //   Tasks:
 //      * running scripts needed to build site
 // =====================================================
