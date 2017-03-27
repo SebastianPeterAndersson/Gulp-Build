@@ -94,3 +94,19 @@ gulp.task("images", function() {
         .pipe(imagemin())
         .pipe(gulp.dest("./dist/content"))
 });
+
+// 1. As a developer, I should be able to run the gulp build command at the command
+//    line to run the clean, scripts, styles, and images tasks with confidence that the clean
+//    task completes before the other commands.
+
+
+// =====================================================
+// BUILD
+//   Tasks:
+//      * running scripts needed to build site
+// =====================================================
+gulp.task("build", function(callback) {
+  runSequence("clean",
+              ["scripts", "styles", "images"],
+              callback);
+});
