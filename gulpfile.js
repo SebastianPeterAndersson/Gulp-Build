@@ -110,3 +110,4 @@ gulp.task("build", function(callback) {
               ["scripts", "styles", "images"],
               callback);
 });
+gulp.task("default", ["build"]);
